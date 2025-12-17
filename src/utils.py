@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional, Tuple
 
-BOARD_SIZE = 10  # the map size is (10, 10)
+BOARD_SIZE = 10  # the map size is 10x10
 
 Coord = Tuple[int, int]  # (x, y) 0-9
 
@@ -50,5 +50,21 @@ def neighbors_8(c: Coord) -> List[Coord]:
                 out.append((cx, cy))
     return out
 
+def new_fog_board() -> List[List[str]]:
+    """
+    Create 10x10 board
+    Where '.' means unknown, 'o' means miss and 'x' menas hit
+    """
+    return [["." for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+
+def render_board(cells: List[List[str]], title: Optional[str] = None) -> str: # cells[y][x]
+    # Converting board to printable text
+    lines: List[str] = []
+    if title:
+        lines.append(title)
+    lines.append("   " + " ".join(str(x) for x in range(BOARD_SIZE)))
+    for y in range(BOARD_SIZE):
+        lines.append(f"{y:>2}  " + " ".join(cells[y][x] for x in range(BOARD_SIZE)))
+    return "\n".join(lines)
 
 
