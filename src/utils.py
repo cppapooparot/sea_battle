@@ -45,7 +45,7 @@ def neighbors_8(c: Coord) -> List[Coord]:
         for Y in (-1, 0, 1):
             if X == 0 and Y == 0:
                 continue
-            cx, cy = x + X, y + Y #getting all neigbors including outside
+            cx, cy = x + X, y + Y # getting all neighbors including outside
             if in_bounds(cx, cy):
                 out.append((cx, cy))
     return out
