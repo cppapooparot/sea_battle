@@ -83,8 +83,8 @@ def validate_no_touch(ships: List[Ship]) -> None:
             occupied.add(c)
 
 def input_player_ships() -> List[Ship]:
-    print("Enter ships in format 'xy-xy' (example: 34-37). Coordinates are 0..9.")
-    print("For size 1 you can enter just 'xy' (example: 55).")
+    print("Enter ships in format 'xy-xy'")
+    print("For size 1 you can enter just 'xy'.")
     print("Ship sizes:", SHIP_SIZES)
 
     ships: List[Ship] = []

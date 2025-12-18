@@ -1,6 +1,6 @@
 from __future__ import annotations
 import random
-from typing import List, Set, Tuple
+from typing import List, Set
 
 from src.ship_input import Ship, SHIP_SIZES, validate_no_touch, save_ships_csv
 from src.utils import Coord, neighbors_8

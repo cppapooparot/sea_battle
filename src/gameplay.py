@@ -3,7 +3,7 @@ from typing import Literal, Optional, Set, List
 
 from src.ship_input import Ship
 from dataclasses import dataclass, field
-from src.utils import Coord, neighbors_8, neighbors_4
+from src.utils import Coord, neighbors_8, neighbors_4, BOARD_SIZE
 from random import Random
 
 ShotResult = Literal["repeat", "miss", "hit", "sunk"]
@@ -36,7 +36,7 @@ def apply_shot(ships: List[Ship], hits: Set[Coord], fog: List[List[str]], c: Coo
     hits.add(c)
     fog[y][x] = "x"
 
-    # if ship is sunk, optionally mark surrounding cells as misses
+    # if ship is sunk, mark surrounding cells as misses
     if is_sunk(ship, hits):
         if mark_around_sunk:
             for cell in ship.cells:
@@ -54,15 +54,15 @@ def all_sunk(ships: List[Ship], hits: Set[Coord]) -> bool:
 
 def bot_random_shot(rng: Random, fog: List[List[str]]) -> Coord:
     choices: List[Coord] = []
-    for y in range(10):
-        for x in range(10):
+    for y in range(BOARD_SIZE):
+        for x in range(BOARD_SIZE):
             if fog[y][x] == ".":
                 choices.append((x, y))
     if not choices:
         raise RuntimeError("No available shots left.")
     return rng.choice(choices)
 
-def in_bounds(c : Coord, size: int = 10) -> bool:
+def in_bounds(c : Coord, size: int = BOARD_SIZE) -> bool:
     x, y = c
     return 0 <= x < size and 0 <= y < size
 
@@ -73,7 +73,7 @@ def is_unshot(fog: List[List[str]], c: Coord) -> bool:
 def line_candidates(hit_cluster: Set[Coord], fog: List[List[str]]) -> List[Coord]:
     """
     Bot AI logic:
-    If we already have >=2 hits, infer orientation and propose next cells at both ends.
+    If we already have >=2 hits, get orientation and try 2 ends
     """
     xs = sorted({x for x, _ in hit_cluster})
     ys = sorted({y for _, y in hit_cluster})
