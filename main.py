@@ -25,8 +25,8 @@ def main() -> None:
 
     print(
         render_side_by_side(
-            render_board(fog_vs_bot, "Your shots vs bot (empty)"),
-            render_board(fog_vs_you, "Bot shots vs you (empty)"),
+            render_board(fog_vs_bot, "Your shots vs bot"),
+            render_board(fog_vs_you, "Bot shots vs you"),
         )
     )
 
