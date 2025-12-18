@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Set, Tuple
 
-from src.utils import Coord, neighbors_8, parse_xy
+from src.utils import Coord, neighbors_8, parse_xy, new_ship_board, render_board
 
 SHIP_SIZES: List[int] = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1]
 
@@ -17,6 +17,7 @@ class Ship:
     @property
     def size(self) -> int:
         return len(self.cells)
+
     
 def cells_from_segment(a: Coord, b: Coord) -> List[Coord]:
     """
@@ -82,10 +83,13 @@ def validate_no_touch(ships: List[Ship]) -> None:
             occupied.add(c)
 
 def input_player_ships() -> List[Ship]:
-    print("Enter ships in format 'xy-xy'")
+    print("Enter ships in format 'xy-xy' (example: 34-37). Coordinates are 0..9.")
+    print("For size 1 you can enter just 'xy' (example: 55).")
     print("Ship sizes:", SHIP_SIZES)
 
     ships: List[Ship] = []
+    board = new_ship_board()
+
     for idx, size in enumerate(SHIP_SIZES, start=1):
         while True:
             try:
@@ -94,9 +98,48 @@ def input_player_ships() -> List[Ship]:
                 ships.append(Ship(ship_id=idx, cells=tuple(cells)))
 
                 validate_no_touch(ships)
+
+                # draw ship on the board (after validation)
+                for (x, y) in cells:
+                    board[y][x] = "S"
+
+                print(render_board(board, title="Your ships"))
                 break
             except ValueError as e:
-                if len(ships) == idx: # rollback last append
+                if len(ships) == idx:  # rollback last append
                     ships.pop()
                 print(f"Invalid ship: {e}")
+    return ships
+
+def save_ships_csv(ships: List[Ship], path: str) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["ship_id", "size", "x", "y"])
+        for ship in ships:
+            for (x, y) in ship.cells:
+                w.writerow([ship.ship_id, ship.size, x, y])
+            
+def run_ship_input(path: str = "data/player_ships.csv") -> List[Ship]:
+    ships = input_player_ships()
+    save_ships_csv(ships, path)
+    print(f"Saved player ships to {path}")
+    return ships
+
+def load_ships_csv(path: str) -> List[Ship]:
+    ships_by_id: dict[int, List[Coord]] = {}
+
+    with open(path, "r", newline="", encoding="utf-8") as f:
+        r = csv.DictReader(f)
+        for row in r:
+            ship_id = int(row["ship_id"])
+            x = int(row["x"])
+            y = int(row["y"])
+            ships_by_id.setdefault(ship_id, []).append((x, y))
+        
+    ships: List[Ship] = []
+    for ship_id, cells in sorted(ships_by_id.items()):
+        ships.append(Ship(ship_id=ship_id, cells=tuple(cells)))
+
+    validate_no_touch(ships)
     return ships
