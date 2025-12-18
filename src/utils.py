@@ -62,9 +62,24 @@ def render_board(cells: List[List[str]], title: Optional[str] = None) -> str: # 
     lines: List[str] = []
     if title:
         lines.append(title)
-    lines.append("   " + " ".join(str(x) for x in range(BOARD_SIZE)))
+    lines.append("    " + " ".join(str(x) for x in range(BOARD_SIZE)))
     for y in range(BOARD_SIZE):
         lines.append(f"{y:>2}  " + " ".join(cells[y][x] for x in range(BOARD_SIZE)))
     return "\n".join(lines)
+
+def new_ship_board() -> List[List[str]]:
+    """
+    Create 10x10 board for ships
+    '.' = empty cell, 'S' = ship cell
+    """
+    return [["." for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+
+def get_cell(board: List[List[str]], c: Coord) -> str:
+    x, y = c
+    return board[y][x]
+
+def set_cell(board: List[List[str]], c: Coord, value: str) -> None:
+    x, y = c
+    board[y][x] = value
 
 
